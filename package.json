@@ -1,12 +1,12 @@
 {
     "name": "@pxe/session",
-    "version": "1.0.0-alpha.1",
+    "version": "1.0.0-alpha.2",
     "description": "Session middleware for PXE.js",
     "main": "index.js",
     "author": "reve-node",
     "license": "MIT",
     "devDependencies": {
-        "@pxe/server": "^1.0.9",
+        "@pxe/server": "^1.0.10-alpha.2",
         "@types/node": "^18.0.0",
         "esbuild": "^0.14.47",
         "ts-node": "^10.8.1",

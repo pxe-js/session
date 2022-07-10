@@ -24,6 +24,16 @@ declare module "@pxe/server" {
              * @param data 
              */
             setData(data: any): void;
+
+            /**
+             * Delete the session in the session store.
+             */
+            destroy(): void;
+
+            /**
+             * Check whether the session is destroyed
+             */
+            readonly destroyed: boolean;
         }
     }
 }
@@ -51,6 +61,9 @@ class Session extends Function {
         ctx.session = {
             id: ctx.cookie.value,
             setData: (data: any) => {
+                if (ctx.session.destroyed) 
+                    throw new Error("Session already destroyed");
+
                 // @ts-ignore
                 ctx.session.id = this.store.save(data, ctx.session.id, this.maxAge);
 
@@ -58,6 +71,15 @@ class Session extends Function {
                 ctx.session.data = data;
             },
             maxAge: this.maxAge,
+            destroyed: false,
+            destroy() {
+                // @ts-ignore
+                ctx.session.destroyed = true;
+                ctx.cookie.remove();
+
+                // @ts-ignore
+                ctx.session.id = ctx.cookie.value = undefined;
+            }
         };
 
         // Initialize the session data
