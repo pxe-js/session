@@ -9,7 +9,6 @@ class Store {
         [id: string]: {
             readonly id: string,
             readonly data: any,
-            readonly expireDate?: number,
         }
     } = {};
     private idCount = 0;
@@ -18,9 +17,8 @@ class Store {
      * Save a session
      * @param data 
      * @param id 
-     * @param maxAge 
      */
-    save(data: any, id?: string, maxAge?: number) {
+    save(data: any, id?: string) {
         const currentDate = Date.now();
         const newID = id ?? hash(String(currentDate) + this.idCount);
 
@@ -30,12 +28,8 @@ class Store {
                 data
             }
 
-        if (typeof maxAge === "number" && this.sessionStore[newID])
-            // @ts-ignore
-            this.sessionStore[newID].expireDate = currentDate + maxAge;
-
         // Generate different hash
-        if (!id || !this.sessionStore[id])
+        if (!id || this.sessionStore[id])
             ++this.idCount;
 
         return newID;
@@ -46,16 +40,7 @@ class Store {
      * @param id 
      */
     get(id: string) {
-        const session = this.sessionStore[id];
-        if (!session)
-            return;
-
-        if (session.expireDate && session.expireDate < Date.now()) {
-            delete this.sessionStore[id];
-            return;
-        }
-
-        return session;
+        return this.sessionStore[id];
     }
 
     /**

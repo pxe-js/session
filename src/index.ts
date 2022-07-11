@@ -15,11 +15,6 @@ declare module "@pxe/server" {
             readonly data: any;
 
             /**
-             * Session max age
-             */
-            readonly maxAge: number;
-
-            /**
              * Set the session data
              * @param data 
              */
@@ -41,7 +36,7 @@ declare module "@pxe/server" {
 interface Session extends Middleware { }
 
 class Session extends Function {
-    constructor(public readonly store: Store = new Store(), public readonly maxAge?: number) {
+    constructor(public readonly store: Store = new Store()) {
         super();
 
         return new Proxy(this, {
@@ -65,12 +60,11 @@ class Session extends Function {
                     throw new Error("Session already destroyed");
 
                 // @ts-ignore
-                ctx.session.id = this.store.save(data, ctx.session.id, this.maxAge);
+                ctx.session.id = this.store.save(data, ctx.session.id);
 
                 // @ts-ignore
                 ctx.session.data = data;
             },
-            maxAge: this.maxAge,
             destroyed: false,
             destroy: () => {
                 // @ts-ignore
