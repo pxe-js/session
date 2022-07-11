@@ -72,13 +72,14 @@ class Session extends Function {
             },
             maxAge: this.maxAge,
             destroyed: false,
-            destroy() {
+            destroy: () => {
                 // @ts-ignore
                 ctx.session.destroyed = true;
-                ctx.cookie.remove();
+                this.store.destroy(ctx.session.id);
 
                 // @ts-ignore
-                ctx.session.id = ctx.cookie.value = undefined;
+                ctx.session.id = undefined;
+                ctx.cookie.remove();
             }
         };
 

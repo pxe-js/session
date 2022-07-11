@@ -1,6 +1,6 @@
 {
     "name": "@pxe/session",
-    "version": "1.0.0-alpha.2",
+    "version": "1.0.0-alpha.3",
     "description": "Session middleware for PXE.js",
     "main": "index.js",
     "author": "reve-node",
