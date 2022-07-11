@@ -22,15 +22,13 @@ class Store {
         const currentDate = Date.now();
         const newID = id ?? hash(String(currentDate) + this.idCount);
 
-        if (data)
-            this.sessionStore[id] = {
-                id: newID,
-                data
-            }
+        this.sessionStore[newID] = {
+            id: newID,
+            data
+        }
 
         // Generate different hash
-        if (!id || this.sessionStore[id])
-            ++this.idCount;
+        ++this.idCount;
 
         return newID;
     }

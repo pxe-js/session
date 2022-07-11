@@ -54,16 +54,12 @@ class Session extends Function {
     async invoke(ctx: Context, next: NextFunction, ...args: any[]) {
         // @ts-ignore
         ctx.session = {
-            id: ctx.cookie.value,
             setData: (data: any) => {
                 if (ctx.session.destroyed) 
                     throw new Error("Session already destroyed");
 
                 // @ts-ignore
                 ctx.session.id = this.store.save(data, ctx.session.id);
-
-                // @ts-ignore
-                ctx.session.data = data;
             },
             destroyed: false,
             destroy: () => {
@@ -74,17 +70,21 @@ class Session extends Function {
                 // @ts-ignore
                 ctx.session.id = undefined;
                 ctx.cookie.remove();
-            }
+            },
         };
 
-        // Initialize the session data
-        if (!ctx.session.id)
-            ctx.session.setData(undefined);
-        else
-            // @ts-ignore
-            ctx.session.data = this.store.get(ctx.session.id)?.data ?? undefined;
+        // @ts-ignore
+        ctx.session.id = ctx.cookie.value;
 
-        ctx.cookie.value = ctx.session.id;
+        // Initialize the session data
+        if (!ctx.session.id) {
+            ctx.session.setData(undefined);
+            ctx.cookie.value = ctx.session.id;
+        }
+
+        Object.defineProperty(ctx.session, "data", {
+            get: () => this.store.get(ctx.session.id)?.data ?? undefined 
+        });
 
         await next(...args);
     }
